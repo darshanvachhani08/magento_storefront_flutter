@@ -12,8 +12,7 @@ class MagentoException implements Exception {
 
 /// Exception thrown when authentication fails
 class MagentoAuthenticationException extends MagentoException {
-  MagentoAuthenticationException(String message, {String? code, dynamic originalError})
-      : super(message, code: code, originalError: originalError);
+  MagentoAuthenticationException(super.message, {super.code, super.originalError});
 
   @override
   String toString() => 'MagentoAuthenticationException: $message';
@@ -23,8 +22,7 @@ class MagentoAuthenticationException extends MagentoException {
 class MagentoGraphQLException extends MagentoException {
   final List<GraphQLError>? errors;
 
-  MagentoGraphQLException(String message, {this.errors, String? code, dynamic originalError})
-      : super(message, code: code, originalError: originalError);
+  MagentoGraphQLException(super.message, {this.errors, super.code, super.originalError});
 
   @override
   String toString() {
@@ -37,8 +35,7 @@ class MagentoGraphQLException extends MagentoException {
 
 /// Exception thrown when network requests fail
 class MagentoNetworkException extends MagentoException {
-  MagentoNetworkException(String message, {String? code, dynamic originalError})
-      : super(message, code: code, originalError: originalError);
+  MagentoNetworkException(super.message, {super.code, super.originalError});
 
   @override
   String toString() => 'MagentoNetworkException: $message';

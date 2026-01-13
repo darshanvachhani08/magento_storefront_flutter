@@ -32,7 +32,7 @@ class MagentoProduct {
 
   factory MagentoProduct.fromJson(Map<String, dynamic> json) {
     // Helper function to safely convert id/uid to String
-    String _toString(dynamic value) {
+    String toStringHelper(dynamic value) {
       if (value == null) return '';
       if (value is String) return value;
       if (value is int) return value.toString();
@@ -40,7 +40,7 @@ class MagentoProduct {
     }
 
     // Helper function to safely get String or null
-    String? _toStringOrNull(dynamic value) {
+    String? toStringOrNullHelper(dynamic value) {
       if (value == null) return null;
       if (value is String) return value;
       if (value is int) return value.toString();
@@ -69,10 +69,10 @@ class MagentoProduct {
     }
 
     return MagentoProduct(
-      id: _toString(json['id'] ?? json['uid']),
-      sku: _toStringOrNull(json['sku']) ?? '',
+      id: toStringHelper(json['id'] ?? json['uid']),
+      sku: toStringOrNullHelper(json['sku']) ?? '',
       name: json['name'] as String? ?? '',
-      urlKey: _toStringOrNull(json['url_key']),
+      urlKey: toStringOrNullHelper(json['url_key']),
       description: description,
       shortDescription: shortDescription,
       images: (json['image'] != null || json['images'] != null)

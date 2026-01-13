@@ -30,7 +30,7 @@ class MagentoCategory {
 
   factory MagentoCategory.fromJson(Map<String, dynamic> json) {
     // Helper function to safely convert id/uid to String
-    String _toString(dynamic value) {
+    String toStringHelper(dynamic value) {
       if (value == null) return '';
       if (value is String) return value;
       if (value is int) return value.toString();
@@ -38,7 +38,7 @@ class MagentoCategory {
     }
 
     // Helper function to safely get String or null
-    String? _toStringOrNull(dynamic value) {
+    String? toStringOrNullHelper(dynamic value) {
       if (value == null) return null;
       if (value is String) return value;
       if (value is int) return value.toString();
@@ -46,8 +46,8 @@ class MagentoCategory {
     }
 
     return MagentoCategory(
-      id: _toString(json['id'] ?? json['uid']),
-      uid: _toString(json['uid'] ?? json['id']),
+      id: toStringHelper(json['id'] ?? json['uid']),
+      uid: toStringHelper(json['uid'] ?? json['id']),
       name: json['name'] as String? ?? '',
       urlPath: json['url_path'] as String?,
       urlKey: json['url_key'] as String?,
@@ -55,7 +55,7 @@ class MagentoCategory {
       image: json['image'] as String?,
       position: json['position'] is int ? json['position'] as int : (json['position'] is String ? int.tryParse(json['position'] as String) : null),
       level: json['level'] is int ? json['level'] as int : (json['level'] is String ? int.tryParse(json['level'] as String) : null),
-      path: _toStringOrNull(json['path']),
+      path: toStringOrNullHelper(json['path']),
       children: json['children'] != null
           ? (json['children'] as List)
               .map((c) => MagentoCategory.fromJson(c as Map<String, dynamic>))
