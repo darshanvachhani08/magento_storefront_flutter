@@ -11,7 +11,7 @@ class ConfigScreen extends StatefulWidget {
 
 class _ConfigScreenState extends State<ConfigScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _baseUrlController = TextEditingController();
+  final _baseUrlController = TextEditingController(text: 'https://ideaoman.bytestechnolab.net/graphql');
   final _storeCodeController = TextEditingController(text: 'default');
   bool _isLoading = false;
 
@@ -34,24 +34,15 @@ class _ConfigScreenState extends State<ConfigScreen> {
     try {
       MagentoService.initialize(
         baseUrl: _baseUrlController.text.trim(),
-        storeCode: _storeCodeController.text.trim().isEmpty
-            ? null
-            : _storeCodeController.text.trim(),
+        storeCode: _storeCodeController.text.trim().isEmpty ? null : _storeCodeController.text.trim(),
       );
 
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomeScreen()));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error initializing SDK: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error initializing SDK: $e'), backgroundColor: Colors.red));
       }
     } finally {
       if (mounted) {
@@ -65,10 +56,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Magento Configuration'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
+      appBar: AppBar(title: const Text('Magento Configuration'), backgroundColor: Theme.of(context).colorScheme.inversePrimary),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -76,10 +64,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Enter your Magento store details',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              const Text('Enter your Magento store details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 24),
               TextFormField(
                 controller: _baseUrlController,
@@ -113,19 +98,10 @@ class _ConfigScreenState extends State<ConfigScreen> {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: _isLoading ? null : _initializeSDK,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
+                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
                 child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text(
-                        'Initialize SDK',
-                        style: TextStyle(fontSize: 16),
-                      ),
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('Initialize SDK', style: TextStyle(fontSize: 16)),
               ),
               const SizedBox(height: 16),
               const Text(

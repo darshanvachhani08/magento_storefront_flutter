@@ -97,7 +97,7 @@ class MagentoProduct {
                 .map((c) => MagentoCategory.fromJson(c as Map<String, dynamic>))
                 .toList()
           : null,
-      inStock: json['stock_status'] == 'IN_STOCK',
+      inStock: json['stock_status'] != null ? json['stock_status'] == 'IN_STOCK' : null,
       stockStatus: json['stock_status'] as String?,
     );
   }

@@ -73,13 +73,7 @@ class MagentoClient {
           )
           .timeout(Duration(seconds: config.timeoutSeconds));
 
-      // Parse response
-      final responseData = jsonDecode(response.body) as Map<String, dynamic>;
-
-      // Apply interceptor to response
-      final finalResponse = interceptor?.interceptResponse(responseData) ?? responseData;
-
-      // Check for HTTP errors
+      // Check for HTTP errors before parsing JSON
       if (response.statusCode != 200) {
         final exception = ErrorMapper.mapHttpError(response);
         MagentoLogger.error(
@@ -89,6 +83,12 @@ class MagentoClient {
         MagentoLogger.error('[MagentoClient] Response Body: ${response.body}');
         throw exception;
       }
+
+      // Parse response
+      final responseData = jsonDecode(response.body) as Map<String, dynamic>;
+
+      // Apply interceptor to response
+      final finalResponse = interceptor?.interceptResponse(responseData) ?? responseData;
 
       // Check for GraphQL errors
       if (finalResponse.containsKey('errors')) {
@@ -124,6 +124,7 @@ class MagentoClient {
       if (e.originalError != null) {
         MagentoLogger.error('[MagentoClient] Original Error: ${e.originalError}');
       }
+      interceptor?.onError(e);
       rethrow;
     } catch (e, stackTrace) {
       final exception = ErrorMapper.mapNetworkException(e);
