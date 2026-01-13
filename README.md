@@ -237,6 +237,7 @@ This is Phase 1 of the SDK, which includes:
 - ✅ Custom GraphQL escape hatch
 
 **Out of Scope (Future Phases):**
+
 - ❌ Cart operations
 - ❌ Checkout
 - ❌ Payments
@@ -247,7 +248,7 @@ This is Phase 1 of the SDK, which includes:
 
 ## License
 
-[Add your license here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
