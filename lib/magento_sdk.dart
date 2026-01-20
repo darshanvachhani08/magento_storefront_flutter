@@ -63,6 +63,19 @@ class MagentoSDK {
           config: config,
           interceptor: interceptor,
           httpClient: httpClient,
+          onAuthFailure: () {
+            // Automatically clear auth data from storage on failure
+            if (useStorage) {
+              MagentoStorage.instance.clearAuthToken();
+              MagentoStorage.instance.clearCustomerCartId();
+            }
+          },
+          onCartFailure: () {
+            // Automatically clear cart ID from storage on failure
+            if (useStorage) {
+              MagentoStorage.instance.clearCustomerCartId();
+            }
+          },
         ) {
     // Save config to storage if enabled
     if (useStorage) {

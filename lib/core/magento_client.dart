@@ -15,10 +15,18 @@ class MagentoClient {
   /// Authentication token for authenticated requests
   String? _authToken;
 
+  /// Callback when authentication fails (401/403)
+  void Function()? onAuthFailure;
+
+  /// Callback when cart authorization fails
+  void Function()? onCartFailure;
+
   MagentoClient({
     required this.config,
     this.interceptor,
     http.Client? httpClient,
+    this.onAuthFailure,
+    this.onCartFailure,
   }) : _httpClient = httpClient ?? http.Client();
 
   /// Set authentication token
@@ -76,6 +84,17 @@ class MagentoClient {
       // Check for HTTP errors before parsing JSON
       if (response.statusCode != 200) {
         final exception = ErrorMapper.mapHttpError(response);
+        
+        // Handle authentication/authorization failure
+        if (exception is MagentoAuthenticationException) {
+          if (exception.message.toLowerCase().contains('cart')) {
+            onCartFailure?.call();
+          } else {
+            _authToken = null;
+            onAuthFailure?.call();
+          }
+        }
+
         MagentoLogger.error(
           '[MagentoClient] HTTP Error: ${exception.toString()}',
         );
@@ -93,8 +112,19 @@ class MagentoClient {
       // Check for GraphQL errors
       if (finalResponse.containsKey('errors')) {
         final exception = ErrorMapper.mapGraphQLError(finalResponse);
+
+        // Handle authentication/authorization failure from GraphQL errors
+        if (exception is MagentoAuthenticationException) {
+          if (exception.message.toLowerCase().contains('cart')) {
+            onCartFailure?.call();
+          } else {
+            _authToken = null;
+            onAuthFailure?.call();
+          }
+        }
+
         MagentoLogger.error('[MagentoClient] GraphQL Error: ${exception.toString()}');
-        if (exception.errors != null) {
+        if (exception is MagentoGraphQLException && exception.errors != null) {
           for (var error in exception.errors!) {
             MagentoLogger.error('[MagentoClient] GraphQL Error Detail: ${error.message}');
             if (error.locations != null) {

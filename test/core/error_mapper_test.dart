@@ -87,9 +87,10 @@ void main() {
 
         expect(exception, isA<MagentoGraphQLException>());
         expect(exception.message, 'Error message');
-        expect(exception.errors, isNotNull);
-        expect(exception.errors!.length, 1);
-        expect(exception.errors![0].message, 'Error message');
+        final graphqlException = exception as MagentoGraphQLException;
+        expect(graphqlException.errors, isNotNull);
+        expect(graphqlException.errors!.length, 1);
+        expect(graphqlException.errors![0].message, 'Error message');
       });
 
       test('should map multiple GraphQL errors', () {
@@ -104,8 +105,9 @@ void main() {
         final exception = ErrorMapper.mapGraphQLError(response);
 
         expect(exception, isA<MagentoGraphQLException>());
-        expect(exception.errors, isNotNull);
-        expect(exception.errors!.length, 3);
+        final graphqlException = exception as MagentoGraphQLException;
+        expect(graphqlException.errors, isNotNull);
+        expect(graphqlException.errors!.length, 3);
         expect(exception.message, contains('Error 1'));
         expect(exception.message, contains('Error 2'));
         expect(exception.message, contains('Error 3'));
@@ -124,7 +126,7 @@ void main() {
           ],
         };
 
-        final exception = ErrorMapper.mapGraphQLError(response);
+        final exception = ErrorMapper.mapGraphQLError(response) as MagentoGraphQLException;
 
         expect(exception.errors, isNotNull);
         expect(exception.errors!.length, 1);
@@ -144,7 +146,7 @@ void main() {
           ],
         };
 
-        final exception = ErrorMapper.mapGraphQLError(response);
+        final exception = ErrorMapper.mapGraphQLError(response) as MagentoGraphQLException;
 
         expect(exception.errors, isNotNull);
         expect(exception.errors![0].path, isNotNull);
@@ -164,7 +166,7 @@ void main() {
           ],
         };
 
-        final exception = ErrorMapper.mapGraphQLError(response);
+        final exception = ErrorMapper.mapGraphQLError(response) as MagentoGraphQLException;
 
         expect(exception.errors, isNotNull);
         expect(exception.errors![0].extensions, isNotNull);
@@ -188,7 +190,7 @@ void main() {
           ],
         };
 
-        final exception = ErrorMapper.mapGraphQLError(response);
+        final exception = ErrorMapper.mapGraphQLError(response) as MagentoGraphQLException;
 
         expect(exception.errors, isNotNull);
         expect(exception.errors![0].message, 'Error message');
@@ -215,6 +217,43 @@ void main() {
 
         expect(exception, isA<MagentoGraphQLException>());
         expect(exception.message, contains('Unknown GraphQL error'));
+      });
+
+      test('should map GraphQL authentication error to MagentoAuthenticationException', () {
+        final response = {
+          'errors': [
+            {
+              'message': 'Consumer key has expired',
+              'extensions': {
+                'category': 'graphql-authentication',
+              },
+            },
+          ],
+        };
+
+        final exception = ErrorMapper.mapGraphQLError(response);
+
+        expect(exception, isA<MagentoAuthenticationException>());
+        expect(exception.message, 'Consumer key has expired');
+        expect(exception.code, '401');
+      });
+
+      test('should map GraphQL authorization error to MagentoAuthenticationException', () {
+        final response = {
+          'errors': [
+            {
+              'message': 'The current user cannot perform operations on cart "123"',
+              'extensions': {
+                'category': 'graphql-authorization',
+              },
+            },
+          ],
+        };
+
+        final exception = ErrorMapper.mapGraphQLError(response);
+
+        expect(exception, isA<MagentoAuthenticationException>());
+        expect(exception.message, contains('cannot perform operations on cart'));
       });
     });
 

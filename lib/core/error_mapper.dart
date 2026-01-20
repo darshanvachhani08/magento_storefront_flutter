@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'magento_exception.dart';
 import 'magento_logger.dart';
@@ -13,8 +14,28 @@ class ErrorMapper {
     MagentoLogger.debug('[ErrorMapper] Response body: $body');
 
     if (statusCode == 401 || statusCode == 403) {
+      String message = 'Authentication failed';
+      
+      // Try to extract more detail from body
+      try {
+        final decodedBody = Map<String, dynamic>.from(
+          (response.body.isNotEmpty ? (jsonDecode(response.body) as Map<String, dynamic>) : {}),
+        );
+        if (decodedBody.containsKey('errors')) {
+          final errors = decodedBody['errors'] as List<dynamic>;
+          if (errors.isNotEmpty) {
+            final firstError = errors.first as Map<String, dynamic>;
+            if (firstError.containsKey('message')) {
+              message = firstError['message'] as String;
+            }
+          }
+        }
+      } catch (_) {
+        // Fallback to default message
+      }
+
       final exception = MagentoAuthenticationException(
-        'Authentication failed',
+        message,
         code: statusCode.toString(),
         originalError: body,
       );
@@ -42,7 +63,7 @@ class ErrorMapper {
   }
 
   /// Map GraphQL response errors to exception
-  static MagentoGraphQLException mapGraphQLError(
+  static MagentoException mapGraphQLError(
     Map<String, dynamic> response,
   ) {
     final errors = response['errors'] as List<dynamic>?;
@@ -84,6 +105,23 @@ class ErrorMapper {
       errors: graphQLErrors,
       originalError: response,
     );
+
+    // Check if any error is authentication or authorization related
+    final isAuthError = graphQLErrors.any((e) =>
+        e.extensions != null &&
+        (e.extensions!['category'] == 'graphql-authentication' ||
+            e.extensions!['category'] == 'graphql-authorization'));
+
+    if (isAuthError) {
+      final authException = MagentoAuthenticationException(
+        errorMessages,
+        code: '401',
+        originalError: response,
+      );
+      MagentoLogger.error('[ErrorMapper] GraphQL Authentication exception: ${authException.toString()}');
+      return authException;
+    }
+
     MagentoLogger.error('[ErrorMapper] GraphQL exception: ${exception.toString()}');
     return exception;
   }

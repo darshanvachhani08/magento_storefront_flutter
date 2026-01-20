@@ -366,7 +366,10 @@ void main() {
 
       final result = await client.query('query { test }');
 
-      expect(result, responseData);
+      expect(result, {
+        ...responseData,
+        'modified': true,
+      });
     });
 
     test('should handle HTTP 401 error', () async {
@@ -403,6 +406,72 @@ void main() {
         client.query('query { test }'),
         throwsA(isA<MagentoAuthenticationException>()),
       );
+    });
+
+    test('should call onCartFailure for cart-related 403 errors', () async {
+      bool cartFailureCalled = false;
+      bool authFailureCalled = false;
+      
+      final client = MagentoClient(
+        config: config,
+        httpClient: mockHttpClient,
+        onCartFailure: () => cartFailureCalled = true,
+        onAuthFailure: () => authFailureCalled = true,
+      );
+
+      final responseBody = jsonEncode({
+        'errors': [
+          {
+            'message': 'The current user cannot perform operations on cart "123"',
+            'extensions': {'category': 'graphql-authorization'}
+          }
+        ]
+      });
+
+      when(mockHttpClient.post(
+        any,
+        headers: anyNamed('headers'),
+        body: anyNamed('body'),
+      )).thenAnswer((_) async => http.Response(responseBody, 403));
+
+      try {
+        await client.query('query { test }');
+      } catch (_) {}
+
+      expect(cartFailureCalled, true);
+      expect(authFailureCalled, false);
+      expect(client.authToken, isNull); // authToken was initially null anyway in this test
+    });
+
+    test('should preserve auth token on cart-related 403 errors', () async {
+      final client = MagentoClient(
+        config: config,
+        httpClient: mockHttpClient,
+        onCartFailure: () {},
+      );
+
+      client.setAuthToken('valid-token');
+
+      final responseBody = jsonEncode({
+        'errors': [
+          {
+            'message': 'The current user cannot perform operations on cart "123"',
+            'extensions': {'category': 'graphql-authorization'}
+          }
+        ]
+      });
+
+      when(mockHttpClient.post(
+        any,
+        headers: anyNamed('headers'),
+        body: anyNamed('body'),
+      )).thenAnswer((_) async => http.Response(responseBody, 403));
+
+      try {
+        await client.query('query { test }');
+      } catch (_) {}
+
+      expect(client.authToken, 'valid-token');
     });
 
     test('should handle HTTP 500 error', () async {
