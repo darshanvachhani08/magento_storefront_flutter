@@ -50,3 +50,4 @@ android/local.properties
 
 ios/.symlinks
 ios/Pods
+/ios/Podfile.lock

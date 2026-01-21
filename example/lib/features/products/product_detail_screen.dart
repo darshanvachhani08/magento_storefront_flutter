@@ -15,6 +15,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _isAddingToCart = false;
 
   Future<void> _addToCart() async {
+    // Prevent adding out of stock products
+    if (widget.product.inStock == false) {
+      return;
+    }
+
     setState(() {
       _isAddingToCart = true;
     });
@@ -97,20 +102,47 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   color: Colors.green,
                 ),
               ),
-            const SizedBox(height: 24),
+            if (widget.product.inStock == false)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade100,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'OUT OF STOCK',
+                    style: TextStyle(
+                      color: Colors.red.shade900,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+            const SizedBox(height: 16),
             // Add to Cart Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _isAddingToCart ? null : _addToCart,
+                onPressed: (_isAddingToCart || widget.product.inStock == false)
+                    ? null
+                    : _addToCart,
                 icon: _isAddingToCart
                     ? const SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Icon(Icons.shopping_cart),
-                label: Text(_isAddingToCart ? 'Adding...' : 'Add to Cart'),
+                    : Icon(widget.product.inStock == false
+                        ? Icons.not_interested
+                        : Icons.shopping_cart),
+                label: Text(_isAddingToCart
+                    ? 'Adding...'
+                    : widget.product.inStock == false
+                        ? 'Out of Stock'
+                        : 'Add to Cart'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: Theme.of(context).colorScheme.primary,

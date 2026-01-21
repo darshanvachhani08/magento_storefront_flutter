@@ -344,6 +344,25 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+              if (product.inStock == false)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade100,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      'OUT OF STOCK',
+                      style: TextStyle(
+                        color: Colors.red.shade900,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
               if (product.images.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -361,7 +380,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: (_isLoading || _addingToCartSkus.contains(product.sku))
+                  onPressed: (_isLoading ||
+                          _addingToCartSkus.contains(product.sku) ||
+                          product.inStock == false)
                       ? null
                       : () => _addToCart(product),
                   icon: _addingToCartSkus.contains(product.sku)
@@ -373,11 +394,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : const Icon(Icons.shopping_cart),
+                      : Icon(product.inStock == false
+                          ? Icons.not_interested
+                          : Icons.shopping_cart),
                   label: Text(
                     _addingToCartSkus.contains(product.sku)
                         ? 'Adding...'
-                        : 'Add to Cart',
+                        : product.inStock == false
+                            ? 'Out of Stock'
+                            : 'Add to Cart',
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
@@ -394,7 +419,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Future<void> _addToCart(MagentoProduct product) async {
     // Prevent multiple concurrent requests for the same product
-    if (_addingToCartSkus.contains(product.sku)) {
+    // or adding out of stock products
+    if (_addingToCartSkus.contains(product.sku) || product.inStock == false) {
       return;
     }
 
@@ -414,13 +440,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
             content: Text('${product.name} added to cart!'),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
-            action: SnackBarAction(
-              label: 'View Cart',
-              textColor: Colors.white,
-              onPressed: () {
-                // TODO: Navigate to cart screen
-              },
-            ),
           ),
         );
       }

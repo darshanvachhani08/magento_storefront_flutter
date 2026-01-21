@@ -284,6 +284,26 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                           ),
                         ],
+                        if (product.inStock == false)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade100,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'OUT OF STOCK',
+                                style: TextStyle(
+                                  color: Colors.red.shade900,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -295,8 +315,9 @@ class _SearchScreenState extends State<SearchScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed:
-                      (_isLoading || _addingToCartSkus.contains(product.sku))
+                  onPressed: (_isLoading ||
+                          _addingToCartSkus.contains(product.sku) ||
+                          product.inStock == false)
                       ? null
                       : () => _addToCart(product),
                   icon: _addingToCartSkus.contains(product.sku)
@@ -310,11 +331,17 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                           ),
                         )
-                      : const Icon(Icons.shopping_cart, size: 18),
+                      : Icon(
+                          product.inStock == false
+                              ? Icons.not_interested
+                              : Icons.shopping_cart,
+                          size: 18),
                   label: Text(
                     _addingToCartSkus.contains(product.sku)
                         ? 'Adding...'
-                        : 'Add to Cart',
+                        : product.inStock == false
+                            ? 'Out of Stock'
+                            : 'Add to Cart',
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
@@ -332,7 +359,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<void> _addToCart(MagentoProduct product) async {
     // Prevent multiple concurrent requests for the same product
-    if (_addingToCartSkus.contains(product.sku)) {
+    // or adding out of stock products
+    if (_addingToCartSkus.contains(product.sku) || product.inStock == false) {
       return;
     }
 

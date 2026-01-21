@@ -48,21 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   top: 8,
                   child: Container(
                     padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 16,
-                    ),
+                    decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(10)),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                     child: Text(
                       cartCount > 99 ? '99+' : cartCount.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -92,11 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     const Text(
                       'Welcome to Magento Store',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     ElevatedButton(
@@ -109,15 +95,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            
+
             const Padding(
               padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Featured Collections',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              child: Text('Featured Collections', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ),
-            
+
             // Placeholder for featured products/categories
             SizedBox(
               height: 150,
@@ -147,10 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const Padding(
               padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Popular Products',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              child: Text('Popular Products', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ),
 
             // Use the existing ProductsScreen as a section or navigate to it
@@ -192,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
-            
+
             const SizedBox(height: 24),
           ],
         ),
@@ -200,4 +180,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
