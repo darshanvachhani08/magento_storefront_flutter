@@ -2,6 +2,9 @@ import 'package:magento_storefront_flutter/magento_storefront_flutter.dart';
 
 /// Service class to manage Magento SDK instance
 class MagentoService {
+  static const String defaultBaseUrl = 'https://ideaoman.bytestechnolab.net/graphql';
+  static const String defaultStoreCode = 'default';
+
   static MagentoSDK? _sdk;
   static MagentoConfig? _config;
 
@@ -11,26 +14,13 @@ class MagentoService {
     String? baseUrl,
     String? storeCode,
   }) {
-    // Try to load config from storage if not provided
-    if (baseUrl == null) {
-      final savedConfig = MagentoSDK.loadConfigFromStorage();
-      if (savedConfig != null) {
-        _config = savedConfig.copyWith(
-          enableDebugLogging: true,
-        );
-        _sdk = MagentoSDK(config: _config!);
-        return;
-      }
-    }
-
-    // Use provided config or throw error
-    if (baseUrl == null) {
-      throw ArgumentError('baseUrl is required if no saved config exists');
-    }
+    // Use provided values or defaults
+    final effectiveBaseUrl = baseUrl ?? defaultBaseUrl;
+    final effectiveStoreCode = storeCode ?? defaultStoreCode;
 
     _config = MagentoConfig(
-      baseUrl: baseUrl,
-      storeCode: storeCode,
+      baseUrl: effectiveBaseUrl,
+      storeCode: effectiveStoreCode,
       enableDebugLogging: true,
     );
     _sdk = MagentoSDK(config: _config!);

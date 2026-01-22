@@ -11,8 +11,8 @@ void main() async {
   // Initialize Hive storage
   await MagentoStorage.init();
 
-  // Try to initialize SDK from saved storage
-  MagentoService.tryInitializeFromStorage();
+  // Initialize SDK with code-level configuration
+  MagentoService.initialize();
 
   runApp(
     MultiProvider(

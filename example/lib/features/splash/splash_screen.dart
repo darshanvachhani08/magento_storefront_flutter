@@ -22,14 +22,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
 
-    if (MagentoService.isInitialized) {
-      if (MagentoService.sdk?.auth.isAuthenticated == true) {
-        context.go('/');
-      } else {
-        context.go('/auth');
-      }
+    if (!MagentoService.isInitialized) {
+      MagentoService.initialize();
+    }
+
+    if (MagentoService.sdk?.auth.isAuthenticated == true) {
+      context.go('/');
     } else {
-      context.go('/config');
+      context.go('/auth');
     }
   }
 
