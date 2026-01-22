@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 
-import '../../features/auth/auth_screen.dart';
+import '../../features/auth/login_screen.dart';
+import '../../features/auth/register_screen.dart';
+import '../../features/auth/forgot_password_screen.dart';
 import '../../features/cart/cart_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/products/products_screen.dart';
@@ -13,7 +15,10 @@ class AppRouter {
     debugLogDiagnostics: true,
     routes: [
       GoRoute(path: '/splash', builder: (context, state) => const SplashScreen()),
-      GoRoute(path: '/auth', builder: (context, state) => const AuthScreen()),
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      GoRoute(path: '/register', builder: (context, state) => const RegisterScreen()),
+      GoRoute(path: '/forgot-password', builder: (context, state) => const ForgotPasswordScreen()),
+      GoRoute(path: '/auth', redirect: (context, state) => '/login'),
       GoRoute(path: '/cart', builder: (context, state) => const CartScreen()),
       GoRoute(
         path: '/',

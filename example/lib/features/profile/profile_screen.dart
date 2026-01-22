@@ -118,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               final authProvider = Provider.of<AuthProvider>(context, listen: false);
               final router = GoRouter.of(context);
               await authProvider.logout();
-              router.go('/auth');
+              router.go('/login');
             },
             tooltip: 'Logout',
           ),
